@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Student Attendance Management System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://unpkg.com/hot-toast@2.4.0/dist/hot-toast.min.js"></script>
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #ffd6e0 0%, #f9e7e7 100%);
+    }
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 64px auto;
+      border-radius: 48px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.13);
+      background: #fff;
+      padding: 72px 56px;
+    }
+    .dashboard-title {
+      font-size: 3.2rem;
+      font-weight: bold;
+      margin-bottom: 48px;
+      text-align: center;
+    }
+    .session-form-section, .sessions-list-section, .attendance-summary-section, .student-management-section {
+      background: #fff6f8;
+      border-radius: 36px;
+      padding: 56px 40px;
+      box-shadow: 0 4px 20px rgba(255,45,45,0.07);
+      margin-bottom: 56px;
+    }
+    .session-form-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+    .scanner-preview {
+      width: 420px;
+      height: 320px;
+      background: #f3e6e6;
+      border-radius: 24px;
+      margin: 0 auto 24px auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #ff2d2d;
+    }
+    .scan-btn {
+      font-size: 1.5rem;
+      padding: 1.1rem 2.8rem;
+      border-radius: 16px;
+      background: #ff2d2d;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 3px 12px rgba(255,45,45,0.10);
+    }
+    .scan-btn:hover {
+      background: #e60023;
+      color: #fff;
+    }
+    .sessions-table th, .sessions-table td, .table th, .table td {
+      vertical-align: middle;
+      font-size: 1.4rem;
+      padding: 1.2rem 1.2rem;
+    }
+    .form-label, label {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    .form-control, .form-select {
+      font-size: 1.2rem;
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+    }
+    .btn, button {
+      font-size: 1.2rem;
+      padding: 0.7rem 1.5rem;
+      border-radius: 12px;
+    }
+    .modal-content {
+      font-size: 1.3rem;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+    }
+    .modal-title {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    .action-btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .action-btn-group .btn {
+      min-width: 130px;
+      padding: 0.6rem 0.8rem;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .nav-pills .nav-link {
+      font-size: 1.35rem;
+      padding: 0.85rem 2.2rem;
+      border-radius: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.18s, color 0.18s;
+    }
+    .nav-pills .nav-link i {
+      font-size: 1.4em;
+      margin-right: 0.5em;
+    }
+    .nav-pills .nav-link.active {
+      box-shadow: 0 0 0 3px #e3eaff;
+    }
+    @media (max-width: 991.98px) {
+      .dashboard-container {
+        padding: 24px 8px;
+        margin: 18px 2px;
+        max-width: 99vw;
+      }
+      .session-form-section, .sessions-list-section, .attendance-summary-section, .student-management-section {
+        padding: 24px 8px;
+      }
+      .scanner-preview {
+        width: 100%;
+        height: 180px;
+        font-size: 2rem;
+      }
+      .sessions-table th, .sessions-table td, .table th, .table td {
+        font-size: 1.1rem;
+        padding: 0.7rem 0.7rem;
+      }
+      .action-btn-group .btn {
+        min-width: 100px;
+        font-size: 1rem;
+        padding: 0.5rem 0.5rem;
+      }
+      .nav-pills .nav-link {
+        font-size: 1.1rem;
+        padding: 0.6rem 1.1rem;
+      }
+      .nav-pills .nav-link i {
+        font-size: 1.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center" style="background: none;">
+    <div class="dashboard-container w-100">
+      <!-- Header with logo, profile, and logout -->
+      <header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-3 border-bottom bg-white rounded shadow-sm px-3">
+        <a class="navbar-brand fw-bold" href="#" style="font-size:2rem; letter-spacing:2px; color:#ff6600;">
+          <span style="color:#ff6600;">Attendance</span><span style="color:#ffa600;"> Track</span>
+        </a>
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#adminProfileModal">
+            <i class="fa-solid fa-user-cog me-1"></i> Admin Profile
+          </button>
+          <button class="btn btn-outline-danger" id="logout-btn">
+            <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+          </button>
+        </div>
+      </header>
+      <!-- Responsive Nav Tabs -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-white rounded shadow-sm mb-4 px-3">
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#dashboardTabs" aria-controls="dashboardTabs" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="dashboardTabs">
+            <ul class="nav nav-pills w-100 justify-content-center flex-wrap gap-2">
+              <li class="nav-item">
+                <a class="nav-link active" id="tab-session" href="#" onclick="showTab('session')"><i class="fa-solid fa-calendar-plus me-1"></i> Create Session</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab-active" href="#" onclick="showTab('active')"><i class="fa-solid fa-list me-1"></i> Active Sessions</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab-summary" href="#" onclick="showTab('summary')"><i class="fa-solid fa-chart-bar me-1"></i> Attendance Summary</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="tab-students" href="#" onclick="showTab('students')"><i class="fa-solid fa-users me-1"></i> Student Management</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- End Responsive Nav Tabs -->
+      <!-- Tab Content Sections -->
+      <div id="section-session">
+        <!-- Session Creation Form (manual class entry) -->
+        <div class="session-form-section mb-4">
+          <div class="session-form-title"><i class="fa-solid fa-calendar-plus me-2"></i>Create New Session</div>
+          <form class="row g-3 align-items-end" id="create-session-form">
+            <div class="col-md-4">
+              <label class="form-label">Grade & Section</label>
+              <select class="form-control" id="session-gradesection-input" required>
+                <option value="">Select Grade & Section</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Class</label>
+              <input type="text" class="form-control" id="session-class-input" placeholder="Enter Class Name (e.g. Math 101)" required>
+            </div>
+            <div class="col-md-1 d-grid">
+              <button type="submit" class="btn btn-success"><i class="fa-solid fa-plus"></i></button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div id="section-active" style="display:none;">
+        <!-- Sessions List & Scanner -->
+        <div class="sessions-list-section mb-4">
+          <div class="session-form-title"><i class="fa-solid fa-list me-2"></i>Active Sessions</div>
+          <div class="table-responsive mb-4">
+            <table class="table table-bordered align-middle sessions-table mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Session ID</th>
+                  <th>Class</th>
+                  <th>Grade & Section</th>
+                  <th>Date/Time</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="active-sessions-tbody">
+                <!-- Sessions will be dynamically loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="section-summary" style="display:none;">
+        <!-- Attendance Summary -->
+        <div class="attendance-summary-section">
+          <div class="session-form-title"><i class="fa-solid fa-chart-bar me-2"></i>Attendance Summary</div>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Session ID</th>
+                  <th>Grade & Section</th>
+                  <th>Class</th>
+                  <th>Date/Time</th>
+                  <th>Present</th>
+                  <th>Absent</th>
+                  <th>Download</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-summary-tbody">
+                <!-- Attendance summary will be dynamically loaded here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="section-students" style="display:none;">
+        <!-- Student Management Section -->
+        <div class="student-management-section mb-4">
+          <div class="session-form-title"><i class="fa-solid fa-users me-2"></i>Student Management</div>
+          <!-- Grade/Section Add Form -->
+          <form class="row g-2 align-items-end mb-3" id="add-grade-section-form">
+            <div class="col-md-4">
+              <input type="text" class="form-control" id="grade-input" placeholder="Grade (e.g. 10)" required>
+            </div>
+            <div class="col-md-4">
+              <input type="text" class="form-control" id="section-input" placeholder="Section (e.g. A)" required>
+            </div>
+            <div class="col-md-2 d-grid">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+            </div>
+            <div class="col-md-2" id="grade-section-msg"></div>
+          </form>
+          <!-- End Grade/Section Add Form -->
+          <div class="row mb-3">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0" id="grade-section-table">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Grade</th>
+                      <th>Section</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="grade-section-tbody">
+                    <!-- Grade/Section pairs will be loaded here by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex mb-2 gap-2">
+            <input type="text" id="student-search" class="form-control" placeholder="Search by name...">
+            <select id="filter-grade" class="form-select" style="max-width: 150px;"><option value="">All Grades</option></select>
+            <select id="filter-section" class="form-select" style="max-width: 150px;"><option value="">All Sections</option></select>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-bordered align-middle mb-0" id="students-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Student ID</th>
+                  <th>Name</th>
+                  <th>Grade</th>
+                  <th>Section</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Students will be loaded here by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- Edit Student Modal -->
+        <div class="modal fade" id="editStudentModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="edit-student-form">
+                <div class="modal-header">
+                  <h5 class="modal-title">Edit Student</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="mb-3">
+                    <label>Student ID</label>
+                    <input type="text" id="edit-student-studentid" class="form-control" required>
+                    <div id="edit-student-qr-preview" class="mt-2 text-center"></div>
+                  </div>
+                  <input type="hidden" id="edit-student-id">
+                  <div class="mb-3">
+                    <label>Name</label>
+                    <input type="text" id="edit-student-name" class="form-control" required>
+                  </div>
+                  <div class="mb-3">
+                    <label>Grade</label>
+                    <select id="edit-student-grade" class="form-select" required></select>
+                  </div>
+                  <div class="mb-3">
+                    <label>Section</label>
+                    <select id="edit-student-section" class="form-select" required></select>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">Save</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Add modals for QR scanning and attendance viewing -->
+      <div class="modal fade" id="scanQRModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fa fa-qrcode me-2"></i>Scan Student QR</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+              <div id="qr-scanner-container"></div>
+              <div class="mt-2 text-muted">Scan a student's QR code to take attendance for this session.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="viewAttendanceModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fa fa-users me-2"></i>Session Attendance</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Student ID</th>
+                      <th>Name</th>
+                      <th>Grade</th>
+                      <th>Section</th>
+                      <th>Status</th>
+                      <th>Date</th>
+                    </tr>
+                  </thead>
+                  <tbody id="session-attendance-tbody">
+                    <!-- Attendance will be loaded here by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Scan Success Modal -->
+      <div class="modal fade" id="scanSuccessModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fa fa-check-circle text-success me-2"></i>Scan Successful</h5>
+            </div>
+            <div class="modal-body text-center">
+              <div id="scan-success-student-name" class="fw-bold mb-2" style="font-size:1.2rem;"></div>
+              <div id="scan-success-grade-section" class="mb-2"></div>
+              <div id="scan-success-status" class="fw-bold text-success" style="font-size:1.1rem;">Status: PRESENT</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Scan Error Modal -->
+      <div class="modal fade" id="scanErrorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fa fa-times-circle text-danger me-2"></i>Scan Error</h5>
+            </div>
+            <div class="modal-body text-center">
+              <div id="scan-error-message" class="fw-bold mb-2 text-danger" style="font-size:1.2rem;">This student is already marked present for this session.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Edit Grade/Section Modal -->
+      <div class="modal fade" id="editGradeSectionModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="edit-grade-section-form">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Grade/Section</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input type="hidden" id="edit-grade-section-id">
+                <div class="mb-3">
+                  <label>Grade</label>
+                  <input type="text" id="edit-grade-input" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                  <label>Section</label>
+                  <input type="text" id="edit-section-input" class="form-control" required>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Confirmation Modal -->
+      <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Please Confirm</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div id="confirmationModalMessage">Are you sure?</div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-danger" id="confirmationModalConfirmBtn">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Admin Profile Modal -->
+      <div class="modal fade" id="adminProfileModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form id="admin-profile-form">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Admin Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="admin-profile-username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="admin-profile-username" required>
+                </div>
+                <div class="mb-3">
+                  <label for="admin-profile-password" class="form-label">New Password</label>
+                  <input type="password" class="form-control" id="admin-profile-password" placeholder="Leave blank to keep current password">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-success">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- End Admin Profile Modal -->
+      <hr class="mb-4">
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://unpkg.com/hot-toast@2.4.0/dist/hot-toast.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html> 

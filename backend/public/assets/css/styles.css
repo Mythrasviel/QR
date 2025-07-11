@@ -1,0 +1,12 @@
+/* Custom styles for Student Attendance Management System */ 
+
+#viewAttendanceModal .modal-dialog {
+  max-width: 1100px;
+}
+
+/* Make admin profile and logout buttons smaller */
+.btn[data-bs-target="#adminProfileModal"],
+#logout-btn {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.75rem;
+} 
